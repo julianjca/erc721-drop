@@ -33,6 +33,25 @@ contract ERC721TokenTest is DSTest {
         token.mint{value: tokenPrice * 2}(2);
     }
 
+    // we mint 9998 tokens through token.mint
+    // we mint 2 and it should be successful, in this test it's reverted
+    function testMintWithMaxSupplyError() public {
+        // set totalSupply counter to max supply
+        // hevm.store(
+        //     address(token),
+        //     bytes32(uint256(7)),
+        //     bytes32(token.TOTAL_SUPPLY())
+        // );
+
+
+        uint256 tokenPrice = token.PRICE_PER_MINT();
+        token.mint{value: tokenPrice * 9998}(9998);
+
+
+        hevm.expectRevert(abi.encodeWithSignature("NoTokensLeft()"));
+        token.mint{value: tokenPrice * 2}(2);
+    }
+
     function testMint(uint16 amount) public {
         // skip fuzzing when the amount is bigger than the supply
         if (amount > token.TOTAL_SUPPLY()) return;
